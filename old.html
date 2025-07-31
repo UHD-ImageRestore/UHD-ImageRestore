@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图像超分学术研究</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36D399',
+                        accent: '#FFAA33',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+            }
+            .nav-link {
+                @apply relative px-4 py-2 text-gray-700 hover:text-primary transition-colors duration-300;
+            }
+            .nav-link::after {
+                @apply content-[''] absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+            }
+            .nav-link:hover::after {
+                @apply w-full;
+            }
+            .btn-primary {
+                @apply bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg;
+            }
+            .btn-secondary {
+                @apply bg-secondary hover:bg-secondary/90 text-white font-medium py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg;
+            }
+            .section-title {
+                @apply text-[clamp(1.8rem,3vw,2.5rem)] font-bold text-dark mb-4 relative;
+            }
+            .section-title::after {
+                @apply content-[''] absolute bottom-[-8px] left-0 w-16 h-1 bg-primary rounded-full;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800">
+    <!-- 导航栏 -->
+    <header class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fa fa-camera-retro text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-dark">图像超分<span class="text-primary">研究</span></span>
+                </a>
+                
+                <!-- 桌面导航 -->
+                <nav class="hidden md:flex space-x-1">
+                    <a href="#home" class="nav-link active">首页</a>
+                    <a href="#team" class="nav-link">研究团队</a>
+                    <a href="#papers" class="nav-link">研究论文</a>
+                    <a href="#datasets" class="nav-link">相关数据集</a>
+                    <a href="#competitions" class="nav-link">学术竞赛</a>
+                </nav>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fa fa-bars text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- 移动端导航菜单 -->
+            <div id="mobile-menu" class="md:hidden hidden mt-4 pb-2">
+                <a href="#home" class="block py-2 text-gray-700 hover:text-primary">首页</a>
+                <a href="#team" class="block py-2 text-gray-700 hover:text-primary">研究团队</a>
+                <a href="#papers" class="block py-2 text-gray-700 hover:text-primary">研究论文</a>
+                <a href="#datasets" class="block py-2 text-gray-700 hover:text-primary">相关数据集</a>
+                <a href="#competitions" class="block py-2 text-gray-700 hover:text-primary">学术竞赛</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="pt-28 pb-20 md:pt-36 md:pb-28 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold text-dark leading-tight mb-6">
+                        图像超分辨率<br><span class="text-primary">学术研究平台</span>
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-lg">
+                        探索前沿的图像超分辨率技术，汇聚顶尖研究团队的创新成果，推动计算机视觉领域发展。
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#team" class="btn-primary">
+                            认识研究团队 <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="#papers" class="btn-secondary">
+                            浏览最新论文 <i class="fa fa-book ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="relative">
+                        <div class="absolute -top-6 -left-6 w-24 h-24 bg-primary/10 rounded-full"></div>
+                        <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-secondary/10 rounded-full"></div>
+                        <img src="https://picsum.photos/id/180/800/600" alt="图像超分辨率技术示例" class="w-full h-auto rounded-2xl shadow-xl relative z-10">
+                        <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-white p-3 rounded-lg shadow-lg z-20">
+                            <div class="flex items-center space-x-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-primary">30+</div>
+                                    <div class="text-sm text-gray-500">研究论文</div>
+                                </div>
+                                <div class="w-px h-10 bg-gray-200"></div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-primary">15+</div>
+                                    <div class="text-sm text-gray-500">研究成员</div>
+                                </div>
+                                <div class="w-px h-10 bg-gray-200"></div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-primary">8</div>
+                                    <div class="text-sm text-gray-500">公开数据集</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 研究团队 -->
+    <section id="team" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title">研究团队</h2>
+            <p class="text-lg text-gray-600 mt-6 mb-12 max-w-3xl">
+                我们的团队由来自全球顶尖高校和研究机构的专家组成，致力于图像超分辨率领域的前沿研究。
+            </p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 团队成员1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1012/400/300" alt="张明教授" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white">张明</h3>
+                                <p class="text-white/80">计算机科学教授</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex items-center text-sm text-gray-500 mr-4">
+                                <i class="fa fa-university mr-2"></i>
+                                <span>清华大学</span>
+                            </div>
+                            <a href="#" class="text-primary hover:text-primary/80">
+                                <i class="fa fa-globe mr-1"></i> 个人主页
+                            </a>
+                        </div>
+                        <p class="text-gray-600">
+                            张明教授长期从事计算机视觉和图像处理研究，在图像超分辨率领域发表多篇顶级论文，曾获ACM最佳论文奖。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 团队成员2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1027/400/300" alt="李华副教授" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white">李华</h3>
+                                <p class="text-white/80">电子工程副教授</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex items-center text-sm text-gray-500 mr-4">
+                                <i class="fa fa-university mr-2"></i>
+                                <span>北京大学</span>
+                            </div>
+                            <a href="#" class="text-primary hover:text-primary/80">
+                                <i class="fa fa-globe mr-1"></i> 个人主页
+                            </a>
+                        </div>
+                        <p class="text-gray-600">
+                            李华副教授专注于深度学习在图像恢复领域的应用，特别是在超分辨率算法优化方面取得了重要突破。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 团队成员3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1005/400/300" alt="王芳博士" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white">王芳</h3>
+                                <p class="text-white/80">博士后研究员</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex items-center text-sm text-gray-500 mr-4">
+                                <i class="fa fa-university mr-2"></i>
+                                <span>浙江大学</span>
+                            </div>
+                            <a href="#" class="text-primary hover:text-primary/80">
+                                <i class="fa fa-globe mr-1"></i> 个人主页
+                            </a>
+                        </div>
+                        <p class="text-gray-600">
+                            王芳博士的研究方向包括神经架构搜索和轻量化超分辨率网络设计，其提出的FSRNet在多个基准测试中取得了SOTA性能。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 团队成员4 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1074/400/300" alt="赵强博士" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white">赵强</h3>
+                                <p class="text-white/80">助理教授</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex items-center text-sm text-gray-500 mr-4">
+                                <i class="fa fa-university mr-2"></i>
+                                <span>上海交通大学</span>
+                            </div>
+                            <a href="#" class="text-primary hover:text-primary/80">
+                                <i class="fa fa-globe mr-1"></i> 个人主页
+                            </a>
+                        </div>
+                        <p class="text-gray-600">
+                            赵强博士专注于基于Transformer的图像超分辨率方法研究，开发了首个端到端的ViT超分辨率框架。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 团队成员5 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1062/400/300" alt="陈静博士" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white">陈静</h3>
+                                <p class="text-white/80">高级研究员</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex items-center text-sm text-gray-500 mr-4">
+                                <i class="fa fa-university mr-2"></i>
+                                <span>中国科学院</span>
+                            </div>
+                            <a href="#" class="text-primary hover:text-primary/80">
+                                <i class="fa fa-globe mr-1"></i> 个人主页
+                            </a>
+                        </div>
+                        <p class="text-gray-600">
+                            陈静博士的研究领域包括低剂量医学图像超分辨率和遥感图像增强，在医学图像处理领域发表了多篇高水平论文。
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 团队成员6 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1077/400/300" alt="林志远博士" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white">林志远</h3>
+                                <p class="text-white/80">研究员</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex items-center text-sm text-gray-500 mr-4">
+                                <i class="fa fa-university mr-2"></i>
+                                <span>中国科学技术大学</span>
+                            </div>
+                            <a href="#" class="text-primary hover:text-primary/80">
+                                <i class="fa fa-globe mr-1"></i> 个人主页
+                            </a>
+                        </div>
+                        <p class="text-gray-600">
+                            林志远博士主要研究方向为视频超分辨率和时空建模，提出的TTVSR网络在多个视频超分基准测试中排名第一。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 研究论文 -->
+    <section id="papers" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title">研究论文</h2>
+            <p class="text-lg text-gray-600 mt-6 mb-12 max-w-3xl">
+                浏览我们在图像超分辨率领域发表的最新研究成果，涵盖传统方法和深度学习方法。
+            </p>
+            
+            <!-- 论文筛选器 -->
+            <div class="flex flex-wrap gap-4 mb-10">
+                <button class="bg-primary text-white px-4 py-2 rounded-lg">全部</button>
+                <button class="bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors">深度学习</button>
+                <button class="bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors">传统方法</button>
+                <button class="bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors">视频超分</button>
+                <button class="bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors">医学图像</button>
+                <button class="bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors">遥感图像</button>
+            </div>
+            
+            <!-- 论文列表 -->
+            <div class="space-y-8">
+                <!-- 论文1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="md:w-1/3">
+                                <img src="https://picsum.photos/id/237/400/300" alt="论文1框架图" class="w-full h-auto rounded-lg shadow-sm">
+                            </div>
+                            <div class="md:w-2/3">
+                                <h3 class="text-xl font-bold text-dark mb-2">Deep Learning for Image Super-Resolution: A Survey</h3>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">深度学习</span>
+                                    <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">综述</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">
+                                    <span class="font-medium">作者:</span> 张明, 李华, 王芳<br>
+                                    <span class="font-medium">单位:</span> 清华大学, 北京大学<br>
+                                    <span class="font-medium">发表时间:</span> 2024年<br>
+                                    <span class="font-medium">期刊:</span> Proceedings of the IEEE
+                                </p>
+                                <p class="text-gray-600 mb-6">
+                                    本文全面回顾了深度学习在图像超分辨率中的应用，分析了不同架构的优缺点，并讨论了当前挑战和未来研究方向。
+                                </p>
+                                <div class="flex flex-wrap gap-3">
+                                    <a href="#" class="text-primary hover:text-primary/80 flex items-center">
+                                        <i class="fa fa-file-pdf-o mr-1"></i> PDF
+                                    </a>
+                                    <a href="#" class="text-green-600 hover:text-green-700 flex items-center">
+                                        <i class="fa fa-github mr-1"></i> 代码
+                                    </a>
+                                    <a href="#" class="text-blue-500 hover:text-blue-600 flex items-center">
+                                        <i class="fa fa-database mr-1"></i> 数据集
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 论文2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="md:w-1/3">
+                                <img src="https://picsum.photos/id/28/400/300" alt="论文2框架图" class="w-full h-auto rounded-lg shadow-sm">
+                            </div>
+                            <div class="md:w-2/3">
+                                <h3 class="text-xl font-bold text-dark mb-2">TwinsSR: Symmetric Swin Transformer for Image Super-Resolution</h3>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">深度学习</span>
+                                    <span class="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full">Transformer</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">
+                                    <span class="font-medium">作者:</span> 赵强, 林志远<br>
+                                    <span class="font-medium">单位:</span> 上海交通大学, 中国科学技术大学<br>
+                                    <span class="font-medium">发表时间:</span> 2025年<br>
+                                    <span class="font-medium">期刊:</span> IEEE Transactions on Pattern Analysis and Machine Intelligence
+                                </p>
+                                <p class="text-gray-600 mb-6">
+                                    本文提出了一种对称Swin Transformer架构，通过双向特征交互机制，显著提升了图像超分辨率的性能，特别是在细节恢复方面。
+                                </p>
+                                <div class="flex flex-wrap gap-3">
+                                    <a href="#" class="text-primary hover:text-primary/80 flex items-center">
+                                        <i class="fa fa-file-pdf-o mr-1"></i> PDF
+                                    </a>
+                                    <a href="#" class="text-green-600 hover:text-green-700 flex items-center">
+                                        <i class="fa fa-github mr-1"></i> 代码
+                                    </a>
+                                    <a href="#" class="text-blue-500 hover:text-blue-600 flex items-center">
+                                        <i class="fa fa-database mr-1"></i> 数据集
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 论文3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="md:w-1/3">
+                                <img src="https://picsum.photos/id/160/400/300" alt="论文3框架图" class="w-full h-auto rounded-lg shadow-sm">
+                            </div>
+                            <div class="md:w-2/3">
+                                <h3 class="text-xl font-bold text-dark mb-2">Medical Image Super-Resolution via Contrastive Learning</h3>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">深度学习</span>
+                                    <span class="bg-red-100 text-red-800 text-xs px-3 py-1 rounded-full">医学图像</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">
+                                    <span class="font-medium">作者:</span> 陈静, 李华<br>
+                                    <span class="font-medium">单位:</span> 中国科学院, 北京大学<br>
+                                    <span class="font-medium">发表时间:</span> 2024年<br>
+                                    <span class="font-medium">期刊:</span> Medical Image Analysis
+                                </p>
+                                <p class="text-gray-600 mb-6">
+                                    本文提出了一种基于对比学习的医学图像超分辨率方法，能够有效保留医学图像中的重要诊断特征，同时提高图像分辨率。
+                                </p>
+                                <div class="flex flex-wrap gap-3">
+                                    <a href="#" class="text-primary hover:text-primary/80 flex items-center">
+                                        <i class="fa fa-file-pdf-o mr-1"></i> PDF
+                                    </a>
+                                    <a href="#" class="text-green-600 hover:text-green-700 flex items-center">
+                                        <i class="fa fa-github mr-1"></i> 代码
+                                    </a>
+                                    <a href="#" class="text-blue-500 hover:text-blue-600 flex items-center">
+                                        <i class="fa fa-database mr-1"></i> 数据集
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 论文4 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="md:w-1/3">
+                                <img src="https://picsum.photos/id/119/400/300" alt="论文4框架图" class="w-full h-auto rounded-lg shadow-sm">
+                            </div>
+                            <div class="md:w-2/3">
+                                <h3 class="text-xl font-bold text-dark mb-2">Video Super-Resolution with Temporal Token Merging</h3>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">深度学习</span>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs px-3 py-1 rounded-full">视频超分</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">
+                                    <span class="font-medium">作者:</span> 林志远, 张明<br>
+                                    <span class="font-medium">单位:</span> 中国科学技术大学, 清华大学<br>
+                                    <span class="font-medium">发表时间:</span> 2025年<br>
+                                    <span class="font-medium">期刊:</span> Computer Vision and Image Understanding
+                                </p>
+                                <p class="text-gray-600 mb-6">
+                                    本文提出了一种基于时间token合并的视频超分辨率方法，能够有效处理视频序列中的运动模糊和时间一致性问题。
+                                </p>
+                                <div class="flex flex-wrap gap-3">
+                                    <a href="#" class="text-primary hover:text-primary/80 flex items-center">
+                                        <i class="fa fa-file-pdf-o mr-1"></i> PDF
+                                    </a>
+                                    <a href="#" class="text-green-600 hover:text-green-700 flex items-center">
+                                        <i class="fa fa-github mr-1"></i> 代码
+                                    </a>
+                                    <a href="#" class="text-blue-500 hover:text-blue-600 flex items-center">
+                                        <i class="fa fa-database mr-1"></i> 数据集
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分页 -->
+            <div class="mt-12 flex justify-center">
+                <nav class="flex items-center space-x-1">
+                    <a href="#" class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">上一页</a>
+                    <a href="#" class="px-3 py-2 rounded-lg bg-primary text-white">1</a>
+                    <a href="#" class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">2</a>
+                    <a href="#" class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">3</a>
+                    <span class="px-3 py-2">...</span>
+                    <a href="#" class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">8</a>
+                    <a href="#" class="px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">下一页</a>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- 相关数据集 -->
+    <section id="datasets" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title">相关数据集</h2>
+            <p class="text-lg text-gray-600 mt-6 mb-12 max-w-3xl">
+                探索用于图像超分辨率研究的公开数据集，这些数据集涵盖了不同领域和应用场景。
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 数据集1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="h-48 bg-gray-100 relative">
+                        <img src="https://picsum.photos/id/0/600/400" alt="DIV2K数据集示例" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-xl font-bold text-white">DIV2K</h3>
+                            <p class="text-white/80 text-sm">DIVerse 2K resolution dataset</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full mr-2">常用</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">自然图像</span>
+                        </div>
+                        <p class="text-gray-600 mb-6">
+                            DIV2K是一个高质量的2K分辨率图像数据集，包含1000张高质量图像，广泛用于图像超分辨率研究。
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">图像数量: 1000</span>
+                            <a href="#" class="text-primary hover:text-primary/80 font-medium">
+                                访问数据集 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="h-48 bg-gray-100 relative">
+                        <img src="https://picsum.photos/id/96/600/400" alt="Set5数据集示例" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-xl font-bold text-white">Set5</h3>
+                            <p class="text-white/80 text-sm">标准测试数据集</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full mr-2">基准</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">自然图像</span>
+                        </div>
+                        <p class="text-gray-600 mb-6">
+                            Set5是一个广泛使用的图像超分辨率基准测试数据集，包含5张高分辨率图像，用于评估超分辨率算法的性能。
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">图像数量: 5</span>
+                            <a href="#" class="text-primary hover:text-primary/80 font-medium">
+                                访问数据集 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="h-48 bg-gray-100 relative">
+                        <img src="https://picsum.photos/id/232/600/400" alt="BSD100数据集示例" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-xl font-bold text-white">BSD100</h3>
+                            <p class="text-white/80 text-sm">Berkeley Segmentation Dataset</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full mr-2">基准</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">自然图像</span>
+                        </div>
+                        <p class="text-gray-600 mb-6">
+                            BSD100是从Berkeley Segmentation Dataset中选取的100张图像组成的数据集，常用于图像超分辨率算法的评估。
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">图像数量: 100</span>
+                            <a href="#" class="text-primary hover:text-primary/80 font-medium">
+                                访问数据集 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集4 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="h-48 bg-gray-100 relative">
+                        <img src="https://picsum.photos/id/433/600/400" alt="Urban100数据集示例" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-xl font-bold text-white">Urban100</h3>
+                            <p class="text-white/80 text-sm">城市场景高分辨率图像</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full mr-2">困难</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">城市建筑</span>
+                        </div>
+                        <p class="text-gray-600 mb-6">
+                            Urban100包含100张城市建筑和街景的高分辨率图像，专注于测试超分辨率算法在处理复杂结构和细节方面的能力。
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">图像数量: 100</span>
+                            <a href="#" class="text-primary hover:text-primary/80 font-medium">
+                                访问数据集 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集5 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="h-48 bg-gray-100 relative">
+                        <img src="https://picsum.photos/id/401/600/400" alt="医学图像数据集示例" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-xl font-bold text-white">MedSR</h3>
+                            <p class="text-white/80 text-sm">医学图像超分辨率数据集</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full mr-2">专业</span>
+                            <span class="bg-red-100 text-red-800 text-xs px-3 py-1 rounded-full">医学图像</span>
+                        </div>
+                        <p class="text-gray-600 mb-6">
+                            MedSR是一个专门为医学图像超分辨率研究设计的数据集，包含CT、MRI和X光图像，用于医疗诊断辅助。
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">图像数量: 500</span>
+                            <a href="#" class="text-primary hover:text-primary/80 font-medium">
+                                访问数据集 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集6 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="h-48 bg-gray-100 relative">
+                        <img src="https://picsum.photos/id/1037/600/400" alt="遥感图像数据集示例" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-xl font-bold text-white">RS-SR</h3>
+                            <p class="text-white/80 text-sm">遥感图像超分辨率数据集</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full mr-2">专业</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full">遥感图像</span>
+                        </div>
+                        <p class="text-gray-600 mb-6">
+                            RS-SR是一个用于遥感图像超分辨率的数据集，包含多光谱和高光谱卫星图像，用于环境监测和地理信息系统。
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500">图像数量: 300</span>
+                            <a href="#" class="text-primary hover:text-primary/80 font-medium">
+                                访问数据集 <i class="fa fa-arrow-right ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 学术竞赛 -->
+    <section id="competitions" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title">学术竞赛</h2>
+            <p class="text-lg text-gray-600 mt-6 mb-12 max-w-3xl">
+                探索图像超分辨率领域的最新学术竞赛，参与挑战并与全球研究人员交流。
+            </p>
+            
+            <div class="space-y-8">
+                <!-- 竞赛1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-primary/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-primary mb-2">2025</div>
+                                    <div class="text-lg font-medium text-dark mb-1">NTIRE</div>
+                                    <div class="text-sm text-gray-600 mb-4">New Trends in Image Restoration and Enhancement</div>
+                                    <div class="inline-block bg-primary text-white px-3 py-1 rounded-full text-sm">
+                                        进行中
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">NTIRE 2025 Challenge on Image Super-Resolution</h3>
+                                <p class="text-gray-600 mb-4">
+                                    NTIRE是图像恢复与增强领域的顶级竞赛，其图像超分辨率挑战赛吸引了全球众多研究团队参与，推动了该领域的技术发展。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">开始日期</div>
+                                        <div class="font-medium">2025年3月15日</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">提交截止</div>
+                                        <div class="font-medium">2025年6月30日</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">奖项</div>
+                                        <div class="font-medium">一等奖 $10,000</div>
+                                    </div>
+                                </div>
+                                <a href="#" class="btn-primary inline-flex items-center">
+                                    了解更多 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 竞赛2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-secondary/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-secondary mb-2">2025</div>
+                                    <div class="text-lg font-medium text-dark mb-1">MedImageSR</div>
+                                    <div class="text-sm text-gray-600 mb-4">医学图像超分辨率挑战赛</div>
+                                    <div class="inline-block bg-secondary text-white px-3 py-1 rounded-full text-sm">
+                                        即将开始
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">MICCAI 2025 - MedImageSR Challenge</h3>
+                                <p class="text-gray-600 mb-4">
+                                    由医学图像计算与计算机辅助干预协会(MICCAI)主办的医学图像超分辨率挑战赛，专注于推动医学图像处理技术在临床诊断中的应用。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">开始日期</div>
+                                        <div class="font-medium">2025年5月1日</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">提交截止</div>
+                                        <div class="font-medium">2025年9月15日</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">奖项</div>
+                                        <div class="font-medium">最佳算法奖</div>
+                                    </div>
+                                </div>
+                                <a href="#" class="btn-primary inline-flex items-center">
+                                    了解更多 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 竞赛3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-accent/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-accent mb-2">2024</div>
+                                    <div class="text-lg font-medium text-dark mb-1">RSImageSR</div>
+                                    <div class="text-sm text-gray-600 mb-4">遥感图像超分辨率竞赛</div>
+                                    <div class="inline-block bg-gray-500 text-white px-3 py-1 rounded-full text-sm">
+                                        已结束
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">IEEE GRSS Data Fusion Contest 2024 - RSImageSR</h3>
+                                <p class="text-gray-600 mb-4">
+                                    由IEEE地球科学与遥感协会(GRSS)主办的遥感图像超分辨率竞赛，聚焦于高分辨率遥感图像在环境监测和资源管理中的应用。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">开始日期</div>
+                                        <div class="font-medium">2024年10月1日</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">提交截止</div>
+                                        <div class="font-medium">2024年12月31日</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">冠军团队</div>
+                                        <div class="font-medium">清华大学团队</div>
+                                    </div>
+                                </div>
+                                <a href="#" class="btn-primary inline-flex items-center">
+                                    查看结果 <i class="fa fa-trophy ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="dehaze-compare">
+        <h2>去雾前后对比</h2>
+        <div class="compare-btn-gallery">
+            <!-- 按钮切换对比组件插入区 -->
+        </div>
+        <div class="divider" style="width:100%;height:2px;background:linear-gradient(to right,#ccc,#eee,#ccc);margin:40px 0;"></div>
+        <div class="compare-slider-gallery">
+            <!-- 滑块对比组件插入区 -->
+        </div>
+    </section>
+    <script src="js/app.js"></script>
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                            <i class="fa fa-camera-retro text-primary text-xl"></i>
+                        </div>
+                        <span class="text-xl font-bold">图像超分<span class="text-primary">研究</span></span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        探索前沿的图像超分辨率技术，汇聚顶尖研究团队的创新成果。
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-github text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-linkedin text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-youtube-play text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-6">快速链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+                        <li><a href="#team" class="text-gray-400 hover:text-white transition-colors">研究团队</a></li>
+                        <li><a href="#papers" class="text-gray-400 hover:text-white transition-colors">研究论文</a></li>
+                        <li><a href="#datasets" class="text-gray-400 hover:text-white transition-colors">相关数据集</a></li>
+                        <li><a href="#competitions" class="text-gray-400 hover:text-white transition-colors">学术竞赛</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-6">资源</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">研究工具</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">开源代码</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">教程文档</a></li>
+                        <li>

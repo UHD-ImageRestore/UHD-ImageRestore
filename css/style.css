@@ -1,0 +1,278 @@
+/* 基础样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+/* 全局样式 */
+body {
+    line-height: 1.6;
+    color: #333;
+    background-color: #f9f9f9;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 头部导航 */
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+    justify-content: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #3498db;
+}
+
+/* 各部分通用样式 */
+section {
+    padding: 4rem 0;
+}
+
+section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+    font-size: 2rem;
+}
+
+/* 团队成员卡片 */
+.team-members {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.member-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.member-card img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+/* 论文列表样式 */
+.paper-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.paper {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.framework-img {
+    width: 100%;
+    margin-top: 1rem;
+    border-radius: 4px;
+}
+
+/* 数据集和比赛样式 */
+.dataset-list, .competition-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.dataset, .competition {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 链接样式 */
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* 页脚样式 */
+footer {
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 2rem 0;
+    margin-top: 2rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    section {
+        padding: 2rem 0;
+    }
+}
+
+/* 去雾对比样式 */
+.compare-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+.compare-container {
+    position: relative;
+    width: 640px;
+    max-width: 98vw;
+    height: 400px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    background: #eee;
+}
+.compare-img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    pointer-events: none;
+}
+.compare-img.after {
+    clip-path: inset(0 0 0 50%);
+    transition: clip-path 0.2s;
+}
+.compare-slider {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    width: 4px;
+    background: #3498db;
+    cursor: ew-resize;
+    z-index: 2;
+    border-radius: 2px;
+    transition: background 0.2s;
+}
+.compare-label {
+    position: absolute;
+    top: 10px;
+    font-size: 1rem;
+    background: rgba(44,62,80,0.7);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 4px;
+    z-index: 3;
+    pointer-events: none;
+}
+.compare-label.left {
+    left: 10px;
+}
+.compare-label.right {
+    right: 10px;
+}
+
+/* 按钮对比区域2列布局 */
+.compare-btn-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+    justify-items: center;
+    margin-top: 2rem;
+}
+/* 滑块对比区域2列布局 */
+.compare-slider-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.3rem;
+    justify-items: center;
+    margin-top: 2rem;
+}
+.divider {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, #ccc, #eee, #ccc);
+    margin: 40px 0;
+}
+/* 按钮对比卡片样式 */
+.compare-btn-item {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 640px;
+    max-width: 98vw;
+}
+.algorithm-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+.algorithm-buttons button {
+    background: #165DFF;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.algorithm-buttons button.active,
+.algorithm-buttons button:hover {
+    background: #36D399;
+}
+.input-img, .output-img {
+    width: 290px;
+    height: 225px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.output-img {
+    margin-left: 1rem;
+}
+@media (max-width: 900px) {
+    .compare-btn-gallery, .compare-slider-gallery {
+        grid-template-columns: 1fr;
+    }
+}

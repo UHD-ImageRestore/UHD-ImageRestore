@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Ultra-HD Restoration Academic Research</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 初始化空数组，将从JSON文件加载数据
+        window.papersData = [];
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36D399',
+                        accent: '#FFAA33',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            },
+            plugins: [
+                function({ addUtilities }) {
+                    const newUtilities = {
+                        '.line-clamp-1': {
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            '-webkit-box-orient': 'vertical',
+                            '-webkit-line-clamp': '1',
+                        },
+                        '.line-clamp-2': {
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            '-webkit-box-orient': 'vertical',
+                            '-webkit-line-clamp': '2',
+                        },
+                        '.line-clamp-3': {
+                            overflow: 'hidden',
+                            display: '-webkit-box',
+                            '-webkit-box-orient': 'vertical',
+                            '-webkit-line-clamp': '3',
+                        },
+                    }
+                    addUtilities(newUtilities)
+                }
+            ]
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+            }
+            .nav-link {
+                @apply relative px-4 py-2 text-gray-700 hover:text-primary transition-colors duration-300;
+            }
+            .nav-link::after {
+                @apply content-[''] absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+            }
+            .nav-link:hover::after {
+                @apply w-full;
+            }
+            .btn-primary {
+                @apply bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg;
+            }
+            .btn-secondary {
+                @apply bg-secondary hover:bg-secondary/90 text-white font-medium py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg;
+            }
+            .section-title {
+                @apply text-[clamp(1.8rem,3vw,2.5rem)] font-bold text-dark mb-4 relative;
+            }
+            .section-title::after {
+                @apply content-[''] absolute bottom-[-8px] left-0 w-16 h-1 bg-primary rounded-full;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800">
+    <!-- 导航栏 -->
+    <header class="fixed w-full bg-white/90 backdrop-blur-md shadow-sm z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="#" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fa fa-camera-retro text-white text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-dark">Image Ultra-HD Restoration<span class="text-primary">Research</span></span>
+                </a>
+                
+                <!-- 桌面导航 -->
+                <nav class="hidden md:flex space-x-1">
+                    <a href="#home" class="nav-link active">Home</a>
+                    <a href="#team" class="nav-link">Research Team</a>
+                    <a href="#papers" class="nav-link">Research Papers</a>
+                    <a href="#datasets" class="nav-link">Related Datasets</a>
+                    <a href="#competitions" class="nav-link">Academic Competitions</a>
+                    <button id="language-toggle" class="nav-link bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                        <i class="fa fa-globe mr-1"></i>中文
+                    </button>
+                </nav>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menu-toggle" class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fa fa-bars text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- 移动端导航菜单 -->
+            <div id="mobile-menu" class="md:hidden hidden mt-4 pb-2">
+                <a href="#home" class="block py-2 text-gray-700 hover:text-primary">Home</a>
+                <a href="#team" class="block py-2 text-gray-700 hover:text-primary">Research Team</a>
+                <a href="#papers" class="block py-2 text-gray-700 hover:text-primary">Research Papers</a>
+                <a href="#datasets" class="block py-2 text-gray-700 hover:text-primary">Related Datasets</a>
+                <a href="#competitions" class="block py-2 text-gray-700 hover:text-primary">Academic Competitions</a>
+                <button id="language-toggle-mobile" class="block w-full text-left py-2 text-gray-700 hover:text-primary bg-primary text-white px-4 py-2 rounded-lg mt-2">
+                    <i class="fa fa-globe mr-1"></i>中文
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="pt-28 pb-20 md:pt-36 md:pb-28 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold text-dark leading-tight mb-6">
+                        Image Ultra-HD Restoration<br><span class="text-primary">Academic Research Platform</span>
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-lg">
+                        Explore cutting-edge image ultra-HD restoration technologies, gather innovative achievements from top research teams, and promote the development of computer vision field.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#team" class="btn-primary">
+                            Meet Research Team <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="#papers" class="btn-secondary">
+                            Browse Latest Papers <i class="fa fa-book ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <div class="relative">
+                        <div class="absolute -top-6 -left-6 w-24 h-24 bg-primary/10 rounded-full"></div>
+                        <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-secondary/10 rounded-full"></div>
+                        <img src="https://picsum.photos/id/180/800/600" alt="Image Ultra-HD Restoration Technology Example" class="w-full h-auto rounded-2xl shadow-xl relative z-10">
+                        <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 bg-white p-3 rounded-lg shadow-lg z-20">
+                            <div class="flex items-center space-x-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-primary">30+</div>
+                                    <div class="text-sm text-gray-500">Research Papers</div>
+                                </div>
+                                <div class="w-px h-10 bg-gray-200"></div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-primary">15+</div>
+                                    <div class="text-sm text-gray-500">Research Members</div>
+                                </div>
+                                <div class="w-px h-10 bg-gray-200"></div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-primary">8</div>
+                                    <div class="text-sm text-gray-500">Public Datasets</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  
+
+    <!-- 研究论文 -->
+    <section id="papers" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title">Related Literature</h2>
+            <p class="text-lg text-gray-600 mt-6 mb-12 max-w-3xl">
+                Browse classic research papers in the field of image ultra-HD restoration, covering important achievements published in top conferences such as CVPR and ICCV.
+            </p>
+            
+            <!-- 论文筛选器 -->
+            <div class="flex flex-wrap gap-4 mb-10">
+                <button class="bg-primary text-white px-4 py-2 rounded-lg">All</button>
+                <button class="bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors">CVPR</button>
+                <button class="bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors">ICCV</button>
+                <button class="bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors">ECCV</button>
+                <button class="bg-white text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors">Open Source</button>
+            </div>
+            
+            <!-- 论文列表 -->
+            <div id="classic-papers-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="text-center py-8 col-span-full">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                    <p class="mt-2 text-gray-600">Loading paper data...</p>
+                </div>
+            </div>
+            
+            <!-- 分页控件 -->
+            <div id="pagination-controls" class="flex justify-center items-center space-x-2 mt-8 hidden">
+                <button id="prev-page" class="px-4 py-2 text-gray-600 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    <i class="fa fa-chevron-left mr-1"></i>Previous
+                </button>
+                
+                <div id="page-numbers" class="flex space-x-1">
+                    <!-- Page numbers will be dynamically generated by JavaScript -->
+                </div>
+                
+                <button id="next-page" class="px-4 py-2 text-gray-600 hover:text-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                    Next<i class="fa fa-chevron-right ml-1"></i>
+                </button>
+            </div>
+            
+            <!-- 分页信息 -->
+            <div id="pagination-info" class="text-center text-gray-600 mt-4 hidden">
+                Showing page <span id="current-page-info">1</span> of <span id="total-pages-info">1</span>
+            </div>
+        </div>
+    </section>
+
+     <section id="dehaze-compare">
+        <h2>Before and After Dehazing Comparison</h2>
+        <div class="compare-btn-gallery">
+            <!-- Button toggle comparison component insertion area -->
+        </div>
+        <div class="divider" style="width:100%;height:2px;background:linear-gradient(to right,#ccc,#eee,#ccc);margin:40px 0;"></div>
+        <div class="compare-slider-gallery">
+            <!-- Slider comparison component insertion area -->
+        </div>
+    </section>
+    <!-- 页脚 -->
+
+    <!-- 相关数据集 -->
+    <section id="datasets" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title">Related Datasets</h2>
+            <p class="text-lg text-gray-600 mt-6 mb-12 max-w-3xl">
+                Explore public datasets for image ultra-HD restoration research, covering different fields and application scenarios.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 数据集1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-primary/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-primary mb-2">1000</div>
+                                    <div class="text-lg font-medium text-dark mb-1">DIV4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">DIVerse 4K Ultra-HD dataset</div>
+                                    <div class="inline-block bg-primary text-white px-3 py-1 rounded-full text-sm">
+                                        Common
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">DIV4K - 4K Ultra-HD Image Dataset</h3>
+                                <p class="text-gray-600 mb-4">
+                                    DIV4K is a high-quality 4K ultra-HD image dataset containing 1000 high-quality 4K resolution images, widely used in image ultra-HD restoration research.
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Image Count</div>
+                                        <div class="font-medium">1000 images</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Resolution</div>
+                                        <div class="font-medium">4K Ultra-HD</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Type</div>
+                                        <div class="font-medium">Natural Images</div>
+                                    </div>
+                                </div>
+                                <a href="https://data.vision.ee.ethz.ch/cvl/DIV2K/" target="_blank" class="btn-primary inline-flex items-center">
+                                    Access Dataset <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-secondary/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-secondary mb-2">5</div>
+                                    <div class="text-lg font-medium text-dark mb-1">Set5-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">4K超高清测试数据集</div>
+                                    <div class="inline-block bg-secondary text-white px-3 py-1 rounded-full text-sm">
+                                        Benchmark
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">Set5-4K - 4K Ultra-HD Test Dataset</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Set5-4K is a widely used benchmark test dataset for image ultra-HD restoration, containing 5 4K ultra-HD images for evaluating the performance of ultra-HD restoration algorithms.
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Image Count</div>
+                                        <div class="font-medium">5 images</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Resolution</div>
+                                        <div class="font-medium">4K Ultra-HD</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Type</div>
+                                        <div class="font-medium">Natural Images</div>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md#set5" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-accent/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-accent mb-2">100</div>
+                                    <div class="text-lg font-medium text-dark mb-1">BSD100-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">Berkeley 4K Ultra-HD Dataset</div>
+                                    <div class="inline-block bg-accent text-white px-3 py-1 rounded-full text-sm">
+                                        基准
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">BSD100-4K - Berkeley 4K超高清数据集</h3>
+                                <p class="text-gray-600 mb-4">
+                                    BSD100-4K是从Berkeley Segmentation Dataset中选取的100张4K超高清图像组成的数据集，常用于图像超高清恢复算法的评估。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">100张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">自然图像</div>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md#bsd100" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集4 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-blue-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-blue-500 mb-2">100</div>
+                                    <div class="text-lg font-medium text-dark mb-1">Urban100-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">城市场景4K超高清图像</div>
+                                    <div class="inline-block bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
+                                        Difficult
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">Urban100-4K - 城市场景4K超高清数据集</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Urban100-4K包含100张城市建筑和街景的4K超高清图像，专注于测试超高清恢复算法在处理复杂结构和细节方面的能力。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">100张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">城市建筑</div>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md#urban100" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集5 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-red-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-red-500 mb-2">500</div>
+                                    <div class="text-lg font-medium text-dark mb-1">MedUHD</div>
+                                    <div class="text-sm text-gray-600 mb-4">医学图像4K超高清恢复数据集</div>
+                                    <div class="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+                                        Professional
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">MedUHD - 医学图像4K超高清恢复数据集</h3>
+                                <p class="text-gray-600 mb-4">
+                                    MedUHD是一个专门为医学图像4K超高清恢复研究设计的数据集，包含CT、MRI和X光图像，用于医疗诊断辅助。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">500张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">医学图像</div>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md#medical-image-datasets" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据集6 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-purple-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-purple-500 mb-2">300</div>
+                                    <div class="text-lg font-medium text-dark mb-1">RSUHD</div>
+                                    <div class="text-sm text-gray-600 mb-4">遥感图像4K超高清恢复数据集</div>
+                                    <div class="inline-block bg-purple-500 text-white px-3 py-1 rounded-full text-sm">
+                                        Professional
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">RSUHD - 遥感图像4K超高清恢复数据集</h3>
+                                <p class="text-gray-600 mb-4">
+                                    RSUHD是一个用于遥感图像4K超高清恢复的数据集，包含多光谱和高光谱卫星图像，用于环境监测和地理信息系统。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">300张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">遥感图像</div>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md#remote-sensing-datasets" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据集7 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-green-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-green-500 mb-2">14</div>
+                                    <div class="text-lg font-medium text-dark mb-1">Set14-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">4K超高清经典测试数据集</div>
+                                    <div class="inline-block bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+                                        基准
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">Set14-4K - 4K超高清经典测试数据集</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Set14-4K是另一个广泛使用的图像超高清恢复基准测试数据集，包含14张4K超高清图像，与Set5-4K一起构成了经典的测试集。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">14张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">自然图像</div>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md#set14" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据集8 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-pink-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-pink-500 mb-2">109</div>
+                                    <div class="text-lg font-medium text-dark mb-1">Manga109-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">动漫图像4K超高清数据集</div>
+                                    <div class="inline-block bg-pink-500 text-white px-3 py-1 rounded-full text-sm">
+                                        专业
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">Manga109-4K - 动漫图像4K超高清数据集</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Manga109-4K是一个专门用于动漫图像4K超高清恢复的数据集，包含109张4K超高清动漫图像，用于测试算法在卡通风格图像上的表现。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">109张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">动漫图像</div>
+                                    </div>
+                                </div>
+                                <a href="http://manga109.org/en/" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据集9 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-orange-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-orange-500 mb-2">10,335</div>
+                                    <div class="text-lg font-medium text-dark mb-1">SunRGBD-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">室内场景4K超高清数据集</div>
+                                    <div class="inline-block bg-orange-500 text-white px-3 py-1 rounded-full text-sm">Professional</div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">SunRGBD-4K - 室内场景4K超高清数据集</h3>
+                                <p class="text-gray-600 mb-4">SunRGBD-4K是一个包含室内场景RGB-D图像的数据集，其中RGB图像可用于4K超高清恢复研究，特别适合室内环境的重建任务。</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">10,335张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">室内场景</div>
+                                    </div>
+                                </div>
+                                <a href="http://rgbd.cs.princeton.edu/" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据集10 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-yellow-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-yellow-500 mb-2">202,599</div>
+                                    <div class="text-lg font-medium text-dark mb-1">CelebA-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">人脸图像4K超高清数据集</div>
+                                    <div class="inline-block bg-yellow-500 text-white px-3 py-1 rounded-full text-sm">Professional</div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">CelebA-4K - 人脸图像4K超高清数据集</h3>
+                                <p class="text-gray-600 mb-4">CelebA-4K是一个大规模人脸属性数据集，包含超过20万张4K超高清名人图像，可用于人脸图像4K超高清恢复研究，特别是在面部细节重建方面。</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">202,599张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">人脸图像</div>
+                                    </div>
+                                </div>
+                                <a href="http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据集11 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-teal-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-teal-500 mb-2">1.8M</div>
+                                    <div class="text-lg font-medium text-dark mb-1">Places365-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">场景分类4K超高清数据集</div>
+                                    <div class="inline-block bg-teal-500 text-white px-3 py-1 rounded-full text-sm">Common</div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">Places365-4K - 场景分类4K超高清数据集</h3>
+                                <p class="text-gray-600 mb-4">Places365-4K是一个包含365个不同场景类别的4K超高清数据集，涵盖室内外各种环境，为场景图像4K超高清恢复提供了丰富的训练数据。</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">1.8M张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">场景图像</div>
+                                    </div>
+                                </div>
+                                <a href="http://places2.csail.mit.edu/" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据集12 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-indigo-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-indigo-500 mb-2">14M+</div>
+                                    <div class="text-lg font-medium text-dark mb-1">ImageNet-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">大规模4K超高清图像数据集</div>
+                                    <div class="inline-block bg-indigo-500 text-white px-3 py-1 rounded-full text-sm">Classic</div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">ImageNet-4K - 大规模4K超高清图像数据集</h3>
+                                <p class="text-gray-600 mb-4">ImageNet-4K是计算机视觉领域最著名的4K超高清数据集之一，包含超过1400万张4K超高清图像，为超高清恢复算法提供了丰富的训练数据。</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">14M+张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">通用图像</div>
+                                    </div>
+                                </div>
+                                <a href="https://image-net.org/" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据集13 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-cyan-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-cyan-500 mb-2">1000</div>
+                                    <div class="text-lg font-medium text-dark mb-1">8K-UHD</div>
+                                    <div class="text-sm text-gray-600 mb-4">8K超高清图像数据集</div>
+                                    <div class="inline-block bg-cyan-500 text-white px-3 py-1 rounded-full text-sm">Frontier</div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">8K-UHD - 8K超高清图像数据集</h3>
+                                <p class="text-gray-600 mb-4">8K-UHD是一个专门为8K超高清图像恢复研究设计的数据集，包含1000张8K分辨率的高质量图像，用于测试最新的超高清恢复技术。</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">1000张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">8K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">8K超高清</div>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md#8k-datasets" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据集14 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover border border-gray-100">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-amber-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-amber-500 mb-2">500</div>
+                                    <div class="text-lg font-medium text-dark mb-1">HDR-4K</div>
+                                    <div class="text-sm text-gray-600 mb-4">HDR 4K超高清数据集</div>
+                                    <div class="inline-block bg-amber-500 text-white px-3 py-1 rounded-full text-sm">Professional</div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">HDR-4K - HDR 4K超高清数据集</h3>
+                                <p class="text-gray-600 mb-4">HDR-4K是一个高动态范围4K超高清图像数据集，包含500张HDR格式的4K图像，用于测试超高清恢复算法在HDR图像上的表现。</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">图像数量</div>
+                                        <div class="font-medium">500张</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">分辨率</div>
+                                        <div class="font-medium">4K超高清</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">类型</div>
+                                        <div class="font-medium">HDR图像</div>
+                                    </div>
+                                </div>
+                                <a href="https://github.com/xinntao/BasicSR/blob/master/docs/DatasetPreparation.md#hdr-datasets" target="_blank" class="btn-primary inline-flex items-center">
+                                    访问数据集 <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 学术竞赛 -->
+    <section id="competitions" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title">Academic Competitions</h2>
+            <p class="text-lg text-gray-600 mt-6 mb-12 max-w-3xl">
+                Explore the latest academic competitions in the field of image ultra-HD restoration, participate in challenges and communicate with researchers worldwide.
+            </p>
+            
+            <div class="space-y-8">
+                <!-- 竞赛1 - 正在进行的PIRM -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-purple-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-purple-500 mb-2">2025</div>
+                                    <div class="text-lg font-medium text-dark mb-1">PIRM</div>
+                                    <div class="text-sm text-gray-600 mb-4">Perceptual Image Restoration</div>
+                                    <div class="inline-block bg-purple-500 text-white px-3 py-1 rounded-full text-sm">
+                                        Ongoing
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">PIRM 2025 Challenge on Perceptual Image Ultra-HD Restoration</h3>
+                                <p class="text-gray-600 mb-4">
+                                    PIRM挑战赛关注感知质量导向的图像超高清恢复，强调人类视觉感知的评估标准，专注于从低分辨率图像恢复出符合人眼感知的超高清图像质量，是图像质量评估领域的重要竞赛。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Start Date</div>
+                                        <div class="font-medium">January 15, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Submission Deadline</div>
+                                        <div class="font-medium">April 30, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Awards</div>
+                                        <div class="font-medium">Ultra-HD Perceptual Quality Award</div>
+                                    </div>
+                                </div>
+                                <a href="https://www.pirm2018.org/" target="_blank" class="btn-primary inline-flex items-center">
+                                    Learn More <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 竞赛2 - 正在进行的NTIRE -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-primary/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-primary mb-2">2025</div>
+                                    <div class="text-lg font-medium text-dark mb-1">NTIRE</div>
+                                    <div class="text-sm text-gray-600 mb-4">New Trends in Image Restoration and Enhancement</div>
+                                    <div class="inline-block bg-primary text-white px-3 py-1 rounded-full text-sm">
+                                        Ongoing
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">NTIRE 2025 Challenge on Image Ultra-HD Restoration</h3>
+                                <p class="text-gray-600 mb-4">
+                                    NTIRE是图像恢复与增强领域的顶级竞赛，其图像超高清恢复挑战赛吸引了全球众多研究团队参与，推动了该领域的技术发展。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Start Date</div>
+                                        <div class="font-medium">February 1, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Submission Deadline</div>
+                                        <div class="font-medium">May 31, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Awards</div>
+                                        <div class="font-medium">First Prize $10,000</div>
+                                    </div>
+                                </div>
+                                <a href="https://cvlai.net/ntire/2025/" target="_blank" class="btn-primary inline-flex items-center">
+                                    Learn More <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 竞赛3 - 即将开始的MICCAI -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-secondary/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-secondary mb-2">2025</div>
+                                    <div class="text-lg font-medium text-dark mb-1">MedUHD</div>
+                                    <div class="text-sm text-gray-600 mb-4">医学图像超高清恢复挑战赛</div>
+                                    <div class="inline-block bg-secondary text-white px-3 py-1 rounded-full text-sm">
+                                        Coming Soon
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">MICCAI 2025 - Medical Image Ultra-HD Restoration Challenge</h3>
+                                <p class="text-gray-600 mb-4">
+                                    由医学图像计算与计算机辅助干预协会(MICCAI)主办的医学图像超高清恢复挑战赛，专注于推动医学图像处理技术在临床诊断中的应用。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Start Date</div>
+                                        <div class="font-medium">June 1, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Submission Deadline</div>
+                                        <div class="font-medium">September 30, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Awards</div>
+                                        <div class="font-medium">Best Ultra-HD Restoration Award</div>
+                                    </div>
+                                </div>
+                                <a href="https://miccai.org/events/challenges/" target="_blank" class="btn-primary inline-flex items-center">
+                                    Learn More <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 竞赛4 - 即将开始的AIM -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-blue-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-blue-500 mb-2">2025</div>
+                                    <div class="text-lg font-medium text-dark mb-1">AIM</div>
+                                    <div class="text-sm text-gray-600 mb-4">Advances in Image Manipulation</div>
+                                    <div class="inline-block bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
+                                        Coming Soon
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">AIM 2025 Challenge on Real-World Image Ultra-HD Restoration</h3>
+                                <p class="text-gray-600 mb-4">
+                                    AIM挑战赛专注于真实世界的图像超高清恢复问题，包括低分辨率图像到4K/8K超高清图像的恢复，处理真实噪声、压缩伪影和运动模糊等实际应用场景，是ECCV的重要竞赛之一。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Start Date</div>
+                                        <div class="font-medium">May 1, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Submission Deadline</div>
+                                        <div class="font-medium">August 15, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Awards</div>
+                                        <div class="font-medium">Best Ultra-HD Restoration Paper Award</div>
+                                    </div>
+                                </div>
+                                <a href="https://data.vision.ee.ethz.ch/cvl/ntire20/" target="_blank" class="btn-primary inline-flex items-center">
+                                    Learn More <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 竞赛5 - 即将开始的VUHD -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-red-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-red-500 mb-2">2025</div>
+                                    <div class="text-lg font-medium text-dark mb-1">VUHD</div>
+                                    <div class="text-sm text-gray-600 mb-4">Video Ultra-HD Restoration</div>
+                                    <div class="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm">
+                                        Coming Soon
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">CVPR 2025 - Video Ultra-HD Restoration Challenge</h3>
+                                <p class="text-gray-600 mb-4">
+                                    CVPR视频超高清恢复挑战赛专注于时序一致性和运动补偿的视频超高清恢复技术，从低分辨率视频序列恢复出4K/8K超高清视频，是视频处理领域的重要竞赛。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Start Date</div>
+                                        <div class="font-medium">April 1, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Submission Deadline</div>
+                                        <div class="font-medium">July 15, 2025</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Awards</div>
+                                        <div class="font-medium">Best Ultra-HD Video Award</div>
+                                    </div>
+                                </div>
+                                <a href="https://cvpr.thecvf.com/" target="_blank" class="btn-primary inline-flex items-center">
+                                    Learn More <i class="fa fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 竞赛6 - 已结束的RSUHD -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-accent/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-accent mb-2">2024</div>
+                                    <div class="text-lg font-medium text-dark mb-1">RSUHD</div>
+                                    <div class="text-sm text-gray-600 mb-4">遥感图像超高清恢复竞赛</div>
+                                    <div class="inline-block bg-gray-500 text-white px-3 py-1 rounded-full text-sm">
+                                        已结束
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">IEEE GRSS Data Fusion Contest 2024 - Remote Sensing Ultra-HD Restoration</h3>
+                                <p class="text-gray-600 mb-4">
+                                    Remote sensing image ultra-HD restoration competition hosted by IEEE Geoscience and Remote Sensing Society (GRSS), focusing on the application of 4K ultra-HD remote sensing images in environmental monitoring and resource management.
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Start Date</div>
+                                        <div class="font-medium">October 1, 2024</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Submission Deadline</div>
+                                        <div class="font-medium">December 31, 2024</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Champion Team</div>
+                                        <div class="font-medium">Tsinghua University Team</div>
+                                    </div>
+                                </div>
+                                <a href="https://www.grss-ieee.org/community/technical-committees/data-fusion/2024-ieee-grss-data-fusion-contest/" target="_blank" class="btn-primary inline-flex items-center">
+                                    View Results <i class="fa fa-trophy ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- 竞赛7 - 已结束的CLIC -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-green-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-green-500 mb-2">2024</div>
+                                    <div class="text-lg font-medium text-dark mb-1">CLIC</div>
+                                    <div class="text-sm text-gray-600 mb-4">Challenge on Learned Image Compression</div>
+                                    <div class="inline-block bg-gray-500 text-white px-3 py-1 rounded-full text-sm">
+                                        已结束
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">CLIC 2024 - Image Ultra-HD Restoration Track</h3>
+                                <p class="text-gray-600 mb-4">
+                                    CLIC竞赛的图像超高清恢复赛道专注于压缩图像的超高清恢复重建，从低质量压缩图像恢复出4K/8K超高清图像，解决实际应用中低质量压缩图像的恢复问题。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Start Date</div>
+                                        <div class="font-medium">August 1, 2024</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Submission Deadline</div>
+                                        <div class="font-medium">November 30, 2024</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Champion Team</div>
+                                        <div class="font-medium">Google Research</div>
+                                    </div>
+                                </div>
+                                <a href="https://compression.cc/tasks/" target="_blank" class="btn-primary inline-flex items-center">
+                                    View Results <i class="fa fa-trophy ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 竞赛8 - 已结束的MAI -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-1/4 mb-6 md:mb-0">
+                                <div class="bg-indigo-500/10 rounded-lg p-4 text-center h-full">
+                                    <div class="text-3xl font-bold text-indigo-500 mb-2">2024</div>
+                                    <div class="text-lg font-medium text-dark mb-1">MAI</div>
+                                    <div class="text-sm text-gray-600 mb-4">Mobile Ultra-HD Restoration</div>
+                                    <div class="inline-block bg-gray-500 text-white px-3 py-1 rounded-full text-sm">
+                                        已结束
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:w-3/4 md:pl-8">
+                                <h3 class="text-xl font-bold text-dark mb-3">MAI 2024 - Mobile Image Ultra-HD Restoration Challenge</h3>
+                                <p class="text-gray-600 mb-4">
+                                    MAI移动图像超高清恢复挑战赛专注于移动设备上的实时超高清恢复技术，要求算法在有限计算资源下实现从低分辨率到4K超高清图像的实时重建。
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Start Date</div>
+                                        <div class="font-medium">June 1, 2024</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Submission Deadline</div>
+                                        <div class="font-medium">September 30, 2024</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-lg">
+                                        <div class="text-sm text-gray-500 mb-1">Champion Team</div>
+                                        <div class="font-medium">Huawei Noah's Ark</div>
+                                    </div>
+                                </div>
+                                <a href="https://ai-benchmark.com/workshops/mai_2024/" target="_blank" class="btn-primary inline-flex items-center">
+                                    View Results <i class="fa fa-trophy ml-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+      <!-- 研究团队 -->
+      <section id="team" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="section-title">Research Team</h2>
+            <p class="text-lg text-gray-600 mt-6 mb-12 max-w-3xl">
+                Our team consists of experts from top universities and research institutions worldwide, dedicated to cutting-edge research in the field of image ultra-HD restoration.
+            </p>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 团队成员1 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1012/400/300" alt="Zheng Zhuoran" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white">Zheng Zhuoran</h3>
+                                <p class="text-white/80">Researcher</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex items-center text-sm text-gray-500 mr-4">
+                                <i class="fa fa-university mr-2"></i>
+                                <span>Sun Yat-sen University</span>
+                            </div>
+                            <div class="flex space-x-3">
+                                <a href="mailto:zhengzr@njust.edu.cn" class="text-primary hover:text-primary/80">
+                                    <i class="fa fa-envelope mr-1"></i> Email
+                                </a>
+                                <a href="https://github.com/zzr-idam" target="_blank" class="text-primary hover:text-primary/80">
+                                    <i class="fa fa-github mr-1"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                        <p class="text-gray-600">
+                            Research areas include ultra-HD image enhancement (including image dehazing, image deblurring, image fusion, underwater image enhancement, etc.)
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 团队成员2 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1027/400/300" alt="Sun Shuning" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white">Sun Shuning</h3>
+                                <p class="text-white/80">Researcher</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex items-center text-sm text-gray-500 mr-4">
+                                <i class="fa fa-university mr-2"></i>
+                                <span>University of Chinese Academy of Sciences</span>
+                            </div>
+                            <div class="flex space-x-3">
+                                <a href="mailto:sunshuning23@mails.ucas.ac.cn" class="text-primary hover:text-primary/80">
+                                    <i class="fa fa-envelope mr-1"></i> Email
+                                </a>
+                                <a href="https://sunshuning.top/" target="_blank" class="text-primary hover:text-primary/80">
+                                    <i class="fa fa-globe mr-1"></i> Personal Page
+                                </a>
+                            </div>
+                        </div>
+                        <p class="text-gray-600">
+                            Main research directions include image enhancement (including image dehazing, deblurring, etc.), generative models and their applications in diffusion models.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 团队成员3 -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="https://picsum.photos/id/1005/400/300" alt="Liu Zhongming" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold text-white">Liu Zhongming</h3>
+                                <p class="text-white/80">Undergraduate Student</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <div class="flex items-center text-sm text-gray-500 mr-4">
+                                <i class="fa fa-university mr-2"></i>
+                                <span>Jiangxi Normal University</span>
+                            </div>
+                            <div class="flex space-x-3">
+                                <a href="mailto:202226703019@jxnu.edu.cn" class="text-primary hover:text-primary/80">
+                                    <i class="fa fa-envelope mr-1"></i> Email
+                                </a>
+                                <a href="https://dwlzm.github.io/" target="_blank" class="text-primary hover:text-primary/80">
+                                    <i class="fa fa-github mr-1"></i> GitHub
+                                </a>
+                            </div>
+                        </div>
+                        <p class="text-gray-600">
+                            Research areas include computer vision and medical image segmentation, focusing on deep learning applications in medical imaging.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                            <i class="fa fa-camera-retro text-primary text-xl"></i>
+                        </div>
+                        <span class="text-xl font-bold">Image Ultra-HD Restoration<span class="text-primary">Research</span></span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        Explore cutting-edge image ultra-HD restoration technologies and gather innovative achievements from top research teams.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fa fa-github text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-6">Quick Links</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="#team" class="text-gray-400 hover:text-white transition-colors">Research Team</a></li>
+                        <li><a href="#papers" class="text-gray-400 hover:text-white transition-colors">Research Papers</a></li>
+                        <li><a href="#datasets" class="text-gray-400 hover:text-white transition-colors">Related Datasets</a></li>
+                    </ul>
+                </div>
+                
+
+            </div>
+            
+            <div class="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500">
+                <p>&copy; 2025 Image Ultra-HD Restoration Research Platform. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+    <script src="js/papers_render.js"></script>
+    <script src="js/language-switcher.js"></script>
